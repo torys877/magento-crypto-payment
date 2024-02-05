@@ -1,0 +1,97 @@
+<?php
+/*
+ * Copyright © Ihor Oleksiienko (https://github.com/torys877)
+ * See LICENSE for license details.
+ */
+
+use Crypto\CryptoCurrency\Api\Data\BlockchainInterface;
+use Crypto\CryptoPayment\ViewModel\EtherProcessing;
+use Magento\Framework\Escaper;
+
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var $escaper Escaper */
+/** @var EtherProcessing $viewModel */
+$viewModel = $block->getViewModel();
+
+$isSingleBlockchain = $viewModel->isSingleBlockchain();
+$blockchainCollection = $viewModel->getBlockchainCollection();
+$currencyAddresses = $viewModel->getTokenAddresses();
+$currencyAddress = $viewModel->getTokenAddress();
+
+$blockchain = $viewModel->getBlockchain();
+?>
+<div data-bind="scope: 'web3paymentscope'">
+    <div class="message" style="display: none"></div>
+
+    <div class="crypto_payment_info" id="crypto_payment_info">
+        <?php if ($isSingleBlockchain):?>
+        <div>
+            <span><?= $block->escapeHtml(__('Blockchain')) ?>:</span>
+            <span><b><?= $block->escapeHtml(__($blockchain->getName())) ?></b></span>
+        </div>
+        <?php else:?>
+        <select name="blockchains" id="blockchains">
+            <option value=""><?= $block->escapeHtml(__("Choose Blockchain")) ?></option>
+            <?php
+                foreach ($blockchainCollection->getItems() as $blockchainItem):
+                    /** @var BlockchainInterface $blockchainItem */
+                    ?>
+                <option value="<?= $blockchainItem->getNetworkId()?>"
+                        data-token-address="<?= $viewModel->getTokenAddressByBlockchain($blockchainItem->getCode()) ?>"
+                        data-merchant-address="<?= $viewModel->getMerchantAddressByBlockchain($blockchainItem->getCode()) ?>"
+                >
+                    <?= $block->escapeHtml(__($blockchainItem->getName())) ?>
+                </option>
+            <?php endforeach;?>
+        </select>
+        <?php endif;?>
+    </div>
+
+    <button id="connect_wallet_button"
+            type="submit"
+            style="display: none"
+            title="<?=__('Connect Wallet')?>"
+            class="action primary"
+            data-bind="click: connectWallet, visible: blockchainNetworkId && checkMetamask() && checkBlockchainNetwork()"
+    >
+        <span><?=__('Connect Wallet')?></span>
+    </button>
+    <button id="cryptopay_button"
+            type="submit"
+            style="display: none"
+            title="<?=__('Pay by Crypto')?>"
+            class="action primary"
+            data-bind="click: pay"
+    >
+        <span><?=__('Pay by Crypto')?></span>
+    </button>
+</div>
+
+<script type="text/x-magento-init">
+    {
+        "*": {
+            "Magento_Ui/js/core/app": {
+                "components": {
+                        "web3paymentscope": {
+                            "component": "Crypto_CryptoPayment/js/web3payment",
+                            "merchantAddress": "<?= /* @noEscape */ $viewModel->getMerchantAddress() ?>",
+                            "networkVersions": "<?= /* @noEscape */ $viewModel->getNetworkVersions() ?>",
+                            "blockchainNetworkId": "<?= /* @noEscape */ $blockchain->getNetworkId() ?>",
+                            "blockchainName": "<?= /* @noEscape */ $blockchain->getName() ?>",
+                            "tokenAddress": "<?= /* @noEscape */ $viewModel->getTokenAddress() ?>",
+                            "tokenAddresses": "<?= /* @noEscape */ $escaper->escapeJs($viewModel->getTokenAddresses()) ?>",
+                            "isToken": "<?= /* @noEscape */ (int) $viewModel->isToken() ?>",
+                            "currencyTokenAbi": "<?= /* @noEscape */ $escaper->escapeJs($viewModel->getCurrency()->getAbi()) ?>",
+                            "isSingleBlockchain": "<?= /* @noEscape */ (int) $isSingleBlockchain ?>",
+                            "orderAmount": "<?= /* @noEscape */ $viewModel->getOrderAmount() ?>",
+                            "orderHash": "<?= /* @noEscape */ $viewModel->getOrderHash() ?>",
+                            "addTxUrl": "<?= /* @noEscape */ $viewModel->getAddTxUrl() ?>",
+                            "txCheckAndConfirmUrl": "<?= /* @noEscape */ $viewModel->getTxCheckAndConfirmUrl() ?>",
+                            "successUrl": "<?= /* @noEscape */ $viewModel->getSuccessUrl() ?>",
+                            "requestIntervalSeconds": "<?= /* @noEscape */ $viewModel->getRequestIntervalSeconds() ?>"
+                        }
+                    }
+                }
+            }
+    }
+</script>

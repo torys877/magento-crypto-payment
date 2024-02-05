@@ -1,0 +1,82 @@
+<?php
+/*
+ * Copyright © Ihor Oleksiienko (https://github.com/torys877)
+ * See LICENSE for license details.
+ */
+
+use Crypto\CryptoCurrency\Api\Data\BlockchainInterface;
+use Crypto\CryptoPayment\ViewModel\EtherProcessing;
+use Magento\Framework\Escaper;
+
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var $escaper Escaper */
+/** @var EtherProcessing $viewModel */
+$viewModel = $block->getViewModel();
+
+$isSingleBlockchain = $viewModel->isSingleBlockchain();
+$blockchainCollection = $viewModel->getBlockchainCollection();
+$currencyAddresses = $viewModel->getCurrencyTokenAddresses();
+$currencyAddress = $viewModel->getCurrencyTokenAddress();
+
+$blockchain = $viewModel->getBlockchain();
+
+?>
+<div data-bind="scope: 'web3paymentscope'">
+    <div class="message" style="display: none"></div>
+
+    <div class="crypto_payment_info" id="crypto_payment_info">
+        <?php if ($isSingleBlockchain):?>
+        <div>
+            <span><?= $block->escapeHtml(__('Blockchain')) ?>:</span>
+            <span><b><?= $block->escapeHtml(__($blockchain->getName())) ?></b></span>
+        </div>
+        <?php else:?>
+        <select name="blockchains" id="blockchains">
+            <option value=""><?= $block->escapeHtml(__("Choose Blockchain")) ?></option>
+            <?php
+                foreach ($blockchainCollection->getItems() as $blockchainItem):
+                    /** @var BlockchainInterface $blockchainItem */
+                    ?>
+                <option value="<?= $blockchainItem->getNetworkId()?>"><?= $block->escapeHtml(__($blockchain->getName())) ?></option>
+            <?php endforeach;?>
+        </select>
+        <?php endif;?>
+    </div>
+
+    <button id="connect_wallet_button" type="submit" style="display: none" title="<?=__('Connect Wallet')?>" class="action primary" data-bind="click: connectWallet, visible: !isWalletConnected()">
+        <span><?=__('Connect Wallet')?></span>
+    </button>
+    <button id="cryptopay_button" type="submit" style="display: none" title="<?=__('Pay by Crypto')?>" class="action primary" data-bind="click: sendTransaction, visible: isWalletConnected() && getCurrentAccount()">
+        <span><?=__('Pay by Crypto')?></span>
+    </button>
+</div>
+
+<script type="text/x-magento-init">
+    {
+        "*": {
+            "Magento_Ui/js/core/app": {
+                "components": {
+                        "web3paymentscope": {
+                            "component": "Crypto_CryptoPayment/js/web3payment",
+                            "merchantAddress": "<?= /* @noEscape */ $viewModel->getMerchantAddress() ?>",
+                            "networkVersions": "<?= /* @noEscape */ $viewModel->getNetworkVersions() ?>",
+                            "orderIncrement": "<?= /* @noEscape */ $viewModel->getOrderIncrement() ?>",
+                            "orderHash": "<?= /* @noEscape */ $viewModel->getOrderHash() ?>",
+                            "orderAmount": "<?= /* @noEscape */ $viewModel->getOrderEtherAmount() ?>",
+                            "addTxUrl": "<?= /* @noEscape */ $viewModel->getAddTxUrl() ?>",
+                            "thCheckAndConfirmUrl": "<?= /* @noEscape */ $viewModel->getThCheckAndConfirmUrl() ?>",
+                            "requestIntervalSeconds": "<?= /* @noEscape */ $viewModel->getRequestIntervalSeconds() ?>",
+                            "successUrl": "<?= /* @noEscape */ $viewModel->getSuccessUrl() ?>",
+                            "isToken": "<?= /* @noEscape */ (int) $viewModel->isToken() ?>",
+                            "isSingleBlockchain": "<?= /* @noEscape */ (int) $isSingleBlockchain ?>",
+                            "currencyId": "<?= /* @noEscape */ (int) $viewModel->getCurrency()->getId() ?>",
+                            "currencyTokenAddresses": "<?= /* @noEscape */ (int) $viewModel->getCurrencyTokenAddresses() ?>",
+                            "currentTokenAddress": "<?= /* @noEscape */ (int) $viewModel->getCurrencyTokenAddress() ?>",
+                            "networkId": "<?= /* @noEscape */ (int) $blockchain->getNetworkId() ?>",
+                            "blockchainName": "<?= /* @noEscape */ (int) $blockchain->getName() ?>"
+                        }
+                    }
+                }
+            }
+    }
+</script>

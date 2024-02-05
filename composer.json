@@ -1,0 +1,27 @@
+{
+    "name": "cryptom2/magento-crypto-payment",
+    "version": "v1.0.0",
+    "description": "Extension allows to receive crypto payments in USDT/USDC and native crypto currencies with Metamask wallet",
+    "type": "magento2-module",
+    "authors": [
+        {
+            "name": "Ihor Oleksiienko",
+            "homepage": "https://github.com/torys877",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "cryptom2/base": ">=1.0.1",
+        "cryptom2/magento-custom-currency": ">=1.0.0",
+        "cryptom2/magento-crypto-currency": ">=1.0.0"
+    },
+    "license": "MIT",
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Crypto\\CryptoPayment\\": ""
+        }
+    }
+}

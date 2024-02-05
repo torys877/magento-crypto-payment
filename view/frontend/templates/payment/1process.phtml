@@ -1,0 +1,49 @@
+<?php
+/*
+ * Copyright © Ihor Oleksiienko (https://github.com/torys877)
+ * See LICENSE for license details.
+ */
+
+use Crypto\CryptoPayment\ViewModel\EtherProcessing;
+
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var EtherProcessing $viewModel */
+$viewModel = $block->getViewModel();
+?>
+<div data-bind="scope: 'web3paymentscope'">
+    <div class="message" style="display: none"></div>
+    <button id="connect_wallet_button" type="submit" style="display: none" title="<?=__('Connect Wallet')?>" class="action primary" data-bind="click: connectWallet, visible: !isWalletConnected()">
+        <span><?=__('Connect Wallet')?></span>
+    </button>
+    <button id="cryptopay_button" type="submit" style="display: none" title="<?=__('Pay by Crypto')?>" class="action primary" data-bind="click: sendTransaction, visible: isWalletConnected() && getCurrentAccount()">
+        <span><?=__('Pay by Crypto')?></span>
+    </button>
+</div>
+
+<script type="text/x-magento-init">
+    {
+        "*": {
+            "Magento_Ui/js/core/app": {
+                "components": {
+                        "web3paymentscope": {
+                            "component": "Crypto_CryptoPayment/js/web3payment",
+                            "merchantAddress": "<?= /* @noEscape */ $viewModel->getMerchantAddress() ?>",
+                            "networkVersions": "<?= /* @noEscape */ $viewModel->getNetworkVersions() ?>",
+                            "orderIncrement": "<?= /* @noEscape */ $viewModel->getOrderIncrement() ?>",
+                            "orderHash": "<?= /* @noEscape */ $viewModel->getOrderHash() ?>",
+                            "orderAmount": "<?= /* @noEscape */ $viewModel->getOrderEtherAmount() ?>",
+                            "addTxUrl": "<?= /* @noEscape */ $viewModel->getAddTxUrl() ?>",
+                            "thCheckAndConfirmUrl": "<?= /* @noEscape */ $viewModel->getThCheckAndConfirmUrl() ?>",
+                            "requestIntervalSeconds": "<?= /* @noEscape */ $viewModel->getRequestIntervalSeconds() ?>",
+                            "successUrl": "<?= /* @noEscape */ $viewModel->getSuccessUrl() ?>",
+                            "isToken": "<?= /* @noEscape */ (int) $viewModel->isToken() ?>",
+                            "blockchains": "<?= /* @noEscape */ (int) $viewModel->getBlockchains() ?>",
+                            "currencyTokenAbi": "<?= /* @noEscape */ (int) $viewModel->getCurrencyAbi() ?>",
+                            "currencyTokenAddresses": "<?= /* @noEscape */ (int) $viewModel->getCurrencyTokenAddresses() ?>"
+                            "currencyTokenAddress": "<?= /* @noEscape */ (int) $viewModel->getCurrencyTokenAddress() ?>"
+                        }
+                    }
+                }
+            }
+    }
+</script>
