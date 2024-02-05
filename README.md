@@ -4,10 +4,9 @@ Extension allows to receive crypto payments in USDT/USDC and native crypto curre
 
 ## Table of contents
 
-* [Description](#description)
 * [Features](#features)
 * [Installation](#installation)
-* [Add New Currency](#add-new-currency)
+* [Configuration](#configuration)
 * [Author](#author)
 * [License](#license)
 
@@ -44,6 +43,8 @@ Follow Instructions Corresponding Modules:
 - Go to `Crypto Payment`
 - Set `Enable` => `Yes`
 - Set `Title` as payment method name
+
+![Magento 2 Crypto Payment](https://raw.githubusercontent.com/torys877/magento-crypto-payment/main/docs/Selection_006.png)
 
 ## Author
 
